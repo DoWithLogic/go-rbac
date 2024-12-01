@@ -9,12 +9,66 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
+        "termsOfService": "https://github.com/DoWithLogic/go-rbac",
         "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/login": {
+            "post": {
+                "description": "Login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Login",
+                "operationId": "login",
+                "parameters": [
+                    {
+                        "description": "Login Object",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "SUCCESS",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Success"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dtos.LoginResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER__ERROR",
+                        "schema": {
+                            "$ref": "#/definitions/response.FailedResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "security": [
@@ -63,6 +117,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "constants.Permission": {
+            "type": "string",
+            "enum": [
+                "users:read",
+                "users:update",
+                "users:create",
+                "users:delete"
+            ],
+            "x-enum-varnames": [
+                "UsersReadPermission",
+                "UsersUpdatePermission",
+                "UsersCreatePermission",
+                "UsersDeletePermission"
+            ]
+        },
         "constants.ResponseMessage": {
             "type": "string",
             "enum": [
@@ -122,6 +191,72 @@ const docTemplate = `{
                 }
             }
         },
+        "dtos.LoginData": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.UserPermission"
+                    }
+                },
+                "role": {
+                    "$ref": "#/definitions/constants.UserRole"
+                },
+                "role_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.LoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/dtos.LoginData"
+                }
+            }
+        },
+        "dtos.UserPermission": {
+            "type": "object",
+            "properties": {
+                "permission": {
+                    "$ref": "#/definitions/constants.Permission"
+                },
+                "permission_id": {
+                    "type": "string"
+                }
+            }
+        },
         "response.FailedResponse": {
             "type": "object",
             "properties": {
@@ -163,6 +298,34 @@ const docTemplate = `{
                     "example": "success"
                 }
             }
+        },
+        "response.Success": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "HTTP status code.",
+                    "type": "integer",
+                    "example": 200
+                },
+                "data": {
+                    "description": "data payload."
+                },
+                "message": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/constants.ResponseMessage"
+                        }
+                    ],
+                    "example": "success"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerToken": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -171,10 +334,10 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/api/v1/rbac",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Go Role and Scope Based Access Control (RBAC)",
+	Description:      "## About\n\nThe **go-rbac** repository is a robust, Golang-based system for implementing and managing role and scope based access control (RBAC) within your organization. It provides a framework to define user roles, permissions, and associated access controls to protect resources and ensure that only authorized users can access specific features or perform certain actions.\n\n## Overview\n\n- **Purpose:** The go-rbac system is designed to simplify the management of user roles, permissions, and access controls within your application, making it easier to implement security policies.\n- **Technology Stack:** Developed in Golang, leveraging lightweight libraries to ensure high performance and scalability.\n- **Data Management:** Implements user roles, permissions, and role-permission mappings in a structured way to easily enforce security policies.\n- **Scalability:** Supports multiple roles and permissions, designed to scale with growing organizational needs.\n- **Security:** Ensures fine-grained access control with role-based permissions and JWT authentication, safeguarding critical resources.\n- **Integration:** Easily integrates with existing authentication systems, APIs, and services within your organization.\n\n## Key Components\n\n- **User Role Model:** Defines the structure and attributes of user roles, including standard roles like Admin, Employee, and Customer.\n- **Permissions Model:** Defines the various permissions (scopes) users can have based on their roles.\n- **Role-Permission Mapping:** Links specific roles to allowed permissions, ensuring users with the appropriate roles can perform specific actions.\n- **JWT Authentication:** Secure access to the API using JWT tokens, with support for role and permission validation.\n- **API Endpoints:** Exposes various endpoints to manage users, roles, and permissions, ensuring access control via role validation.\n\n## API Documentation\n\n### Overview\nThis repository provides a set of API endpoints for managing roles, permissions, and user access. The API allows you to create, update, retrieve, and delete roles, permissions, and role-permission mappings. It also supports secure JWT-based authentication to enforce role-based access control.\n\n### Explore Swagger Documentation\nFor a detailed description of all the available API endpoints, request/response formats, and examples, explore our Swagger documentation at the following link:\n\n- [Swagger Documentation](http://localhost:3002/swagger/index.html)\n\nThe Swagger documentation will provide detailed information on:\n- **Available Endpoints**: All API routes for managing users, roles, permissions, and access control.\n- **Request/Response Formats**: Detailed format for the expected input and output of each API endpoint.\n- **Authentication**: How to authenticate requests using JWT tokens.\n- **Role and Permission Validation**: How roles and permissions are validated for each endpoint.\n\n### Contact\n\nFor any questions or support related to go-rbac, please create issue contact at `martin.yonathan305@gmail.com`.\n\n### Swagger Documentation\n\nExplore our Swagger documentation for a comprehensive overview of the available endpoints, request/response formats, and examples. Access the documentation at `https://{{base-url}}/swagger/index.html`.\n\n",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

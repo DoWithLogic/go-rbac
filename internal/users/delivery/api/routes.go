@@ -9,6 +9,6 @@ import (
 )
 
 func MapUserRoutes(g *echo.Group, h users.Handlers, mw *middlewares.Middleware) {
-	users := g.Group("/users", mw.JWTMiddleware())
-	users.POST("", h.CreateUserHandler, mw.RolesMiddleware(constants.AdminUserRole), mw.PermissionsMiddleware(constants.UsersCreatePermission))
+	g.POST("/login", h.LoginHandler)
+	g.POST("/users", h.CreateUserHandler, mw.JWTMiddleware(), mw.RolesMiddleware(constants.AdminUserRole), mw.PermissionsMiddleware(constants.UsersCreatePermission))
 }

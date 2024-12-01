@@ -20,7 +20,7 @@ func NewCreateUser(request dtos.CreateUserRequest) *CreateUser {
 	return &CreateUser{
 		ID:        uuid.New(),
 		Username:  request.Username,
-		Email:     request.Username,
+		Email:     request.Email,
 		CreatedAt: time.Now(),
 	}
 }

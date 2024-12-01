@@ -5,7 +5,7 @@ CREATE TABLE permissions (
     name VARCHAR(255) UNIQUE NOT NULL,           -- Permission name (e.g., 'users:read')
     description TEXT,                           -- Description of the permission
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Created at timestamp
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  -- Updated at timestamp
+    updated_at TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP  -- Updated at timestamp
 );
 -- +goose StatementEnd
 

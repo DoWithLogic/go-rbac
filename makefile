@@ -99,4 +99,4 @@ run: setup migrate-up mod install
 ## swagger-gen: generate swagger documentation
 .PHONY: swagger-gen
 swagger-gen:
-	@swag init -g cmd/main.go -md ./docs/ && ./docs/fix.sh
+	@swag init -md ./docs/ && ./docs/fix.sh
