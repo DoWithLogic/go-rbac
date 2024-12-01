@@ -1,0 +1,157 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/users": {
+            "post": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Create User.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create User",
+                "operationId": "create-user",
+                "parameters": [
+                    {
+                        "description": "User Object",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "SUCCESS",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseFormat"
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER__ERROR",
+                        "schema": {
+                            "$ref": "#/definitions/response.FailedResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "constants.ResponseMessage": {
+            "type": "string",
+            "enum": [
+                "internal_server_error",
+                "bad_request",
+                "success",
+                "unauthorized",
+                "forbidden",
+                "not_found",
+                "conflict",
+                "gateway_timeout"
+            ],
+            "x-enum-varnames": [
+                "InternalServerError",
+                "BadRequest",
+                "Success",
+                "Unauthorized",
+                "Forbidden",
+                "NotFound",
+                "Conflict",
+                "GatewayTimeOut"
+            ]
+        },
+        "constants.UserRole": {
+            "type": "string",
+            "enum": [
+                "ADMIN",
+                "EMPLOYEE",
+                "CUSTOMER"
+            ],
+            "x-enum-varnames": [
+                "AdminUserRole",
+                "EmployeeUserRole",
+                "CustomerUserRole"
+            ]
+        },
+        "dtos.CreateUserRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "role",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/constants.UserRole"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.FailedResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "HTTP status code.",
+                    "type": "integer",
+                    "example": 500
+                },
+                "error": {
+                    "description": "error message.",
+                    "type": "string",
+                    "example": "{$err}"
+                },
+                "message": {
+                    "description": "Message corresponding to the status code.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/constants.ResponseMessage"
+                        }
+                    ],
+                    "example": "internal_server_error"
+                }
+            }
+        },
+        "response.ResponseFormat": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "HTTP status code.",
+                    "type": "integer",
+                    "example": 200
+                },
+                "message": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/constants.ResponseMessage"
+                        }
+                    ],
+                    "example": "success"
+                }
+            }
+        }
+    }
+}

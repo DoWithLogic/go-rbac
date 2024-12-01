@@ -1,0 +1,24 @@
+App:
+  Name: "go-rbac"
+  Version: "0.0.1"
+  Scheme: "http"
+  Host: "localhost:3002"
+  Environment: local #local,development,staging,production
+  
+Server:
+  Port: "3002"
+  Debug: true
+  TimeZone: "Asia/Jakarta"
+
+Database:
+  Host: "127.0.0.1"
+  Port: "3306"
+  DBName: "go_rbac"
+  UserName: "root"
+  Password: "pwd"
+  Debug: true
+
+Security:
+  JWT:
+    Key: "95476ff7-c7b2-49d7-853e-322b6f983914"
+    ExpiredInSecond: 3600

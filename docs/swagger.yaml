@@ -1,0 +1,107 @@
+definitions:
+  constants.ResponseMessage:
+    enum:
+    - internal_server_error
+    - bad_request
+    - success
+    - unauthorized
+    - forbidden
+    - not_found
+    - conflict
+    - gateway_timeout
+    type: string
+    x-enum-varnames:
+    - InternalServerError
+    - BadRequest
+    - Success
+    - Unauthorized
+    - Forbidden
+    - NotFound
+    - Conflict
+    - GatewayTimeOut
+  constants.UserRole:
+    enum:
+    - ADMIN
+    - EMPLOYEE
+    - CUSTOMER
+    type: string
+    x-enum-varnames:
+    - AdminUserRole
+    - EmployeeUserRole
+    - CustomerUserRole
+  dtos.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        $ref: '#/definitions/constants.UserRole'
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - role
+    - username
+    type: object
+  response.FailedResponse:
+    properties:
+      code:
+        description: HTTP status code.
+        example: 500
+        type: integer
+      error:
+        description: error message.
+        example: '{$err}'
+        type: string
+      message:
+        allOf:
+        - $ref: '#/definitions/constants.ResponseMessage'
+        description: Message corresponding to the status code.
+        example: internal_server_error
+    type: object
+  response.ResponseFormat:
+    properties:
+      code:
+        description: HTTP status code.
+        example: 200
+        type: integer
+      message:
+        allOf:
+        - $ref: '#/definitions/constants.ResponseMessage'
+        example: success
+    type: object
+info:
+  contact: {}
+paths:
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Create User.
+      operationId: create-user
+      parameters:
+      - description: User Object
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: SUCCESS
+          schema:
+            $ref: '#/definitions/response.ResponseFormat'
+        "500":
+          description: INTERNAL_SERVER__ERROR
+          schema:
+            $ref: '#/definitions/response.FailedResponse'
+      security:
+      - BearerToken: []
+      summary: Create User
+      tags:
+      - Users
+swagger: "2.0"
