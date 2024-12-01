@@ -30,7 +30,9 @@ var (
 	ErrJWTTokenNotValid = errors.New("JWT token is not valid")
 	ErrAccessDenied     = errors.New("Access Denied")
 
-	ErrInvalidRole = errors.New("invalid role")
+	ErrInvalidRole              = errors.New("invalid role")
+	ErrUserNotFound             = errors.New("user not found")
+	ErrYourEmailOrPasswordWrong = errors.New("your email or password is wrong")
 )
 
 type AppError struct {

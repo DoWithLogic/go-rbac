@@ -7,7 +7,7 @@ CREATE TABLE users (
     password TEXT NOT NULL,                      -- Encrypted password
     role_id CHAR(36) NOT NULL,                   -- Role ID (UUID)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Created at timestamp
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  -- Updated at timestamp
+    updated_at TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP  -- Updated at timestamp
 );
 -- +goose StatementEnd
 

@@ -31,39 +31,25 @@ func (s *Server) mapHandler() error {
 	}
 
 	var (
-		redis      = redis.NewRedis(s.redisConn)
-		jwtFactory = security.NewJWTFactory(s.cfg.Security.JWT, redis)
-		mw         = middlewares.NewMiddleware(jwtFactory)
+		redis    = redis.NewRedis(s.redisConn)
+		security = security.NewJWTFactory(s.cfg.Security.JWT, redis)
+		mw       = middlewares.NewMiddleware(security)
 
 		repositories = newRepositories(s.db)
-		usecases     = newUsecases(repositories)
 	)
-	userHandler := userApi.NewUsersHandler(usecases.userUC)
+	userUC := userUsecase.NewUsersUC(userUsecase.Dependencies{Repositories: userUsecase.Repositories{UserRepo: repositories.userRepo}, Others: userUsecase.Others{Security: security}})
+	userHandler := userApi.NewUsersHandler(userUC)
 	userApi.MapUserRoutes(domain, userHandler, mw)
 
 	return nil
 }
 
 type repositories struct {
-	authRepo users.Repositories
+	userRepo users.Repositories
 }
 
 func newRepositories(db *gorm.DB) repositories {
 	return repositories{
-		authRepo: userRepo.NewUsersRepository(db),
-	}
-}
-
-type usecases struct {
-	userUC users.Usecases
-}
-
-func newUsecases(r repositories) usecases {
-	return usecases{
-		userUC: userUsecase.NewUsersUC(userUsecase.Dependencies{
-			Repositories: userUsecase.Repositories{
-				UserRepo: r.authRepo,
-			},
-		}),
+		userRepo: userRepo.NewUsersRepository(db),
 	}
 }
